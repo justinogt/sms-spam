@@ -5,22 +5,86 @@
   <meta name="viewport" content="width=1920, initial-scale=1.0">
   
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud.min.css">
   <link rel="stylesheet" href="style.css">
 
   <title>SMS Spam</title>
 </head>
 <body>
-  <nav class="navbar navbar-light bg-light">
+  <nav class="navbar navbar-light bg-light bd-navbar shadow-sm">
     <a class="navbar-brand">SMS Spam</a>
     <div class="form-inline w-50">
       <input id="fileInput" class="form-control-file col-md-9" type="file" accept=".csv" aria-label="Selecione o arquivo .csv">
       <button id="generateStatistics" class="btn btn-primary col-md-3 mt-sm-1" type="submit">Gerar Estatística</button>
     </div>
   </nav>
+
+  <div class="container-fluid pt-4 pb-4">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <div id="cardCommonWordsCloud" class="card shadow-sm">
+          <div class="card-body">
+            <p>Palavras Mais Comuns em Mensagens Não Spam</p>
+            <div class="words-cloud"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div id="cardSpamWordsCloud" class="card shadow-sm">
+          <div class="card-body">
+            <p>Palavras Mais Comuns em Mensagens Spam</p>
+            <div class="words-cloud"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 mb-3">
+        <div id="cardCommonSpamSMS" class="card shadow-sm">
+          <div class="card-body">
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div id="cardMinMaxWordCount" class="card shadow-sm">
+          <div class="card-body">
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div id="cardAverageWordCount" class="card shadow-sm">
+          <div class="card-body">
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div id="cardSequencyCommonSpamMessages" class="card shadow-sm">
+          <div class="card-body">
+            <canvas></canvas>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <div id="cardfrequentWords" class="card shadow-sm">
+          <div class="card-body">
+            <canvas></canvas>
+            <input type="text" class="slider" value="25" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"></script>
   <script src="application.js"></script>
 </body>
 </html>

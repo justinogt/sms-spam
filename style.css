@@ -1,0 +1,8 @@
+.card-body canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.words-cloud {
+  height: 250px;
+}
