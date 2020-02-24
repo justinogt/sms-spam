@@ -80,5 +80,5 @@ const smsRaw = parseSMSCSV(csvContent);
   app.get('*.*', express.static(_app_folder, { maxAge: '1y' }));
   app.all('*', (req, res) => res.status(200).sendFile(`/`, { root: _app_folder }));
 
-  app.listen(_port, () => console.log('Node Express server for ' + app.name + ' listening on http://localhost:' + _port));
+  app.listen(_port, () => console.log('Node server for ' + app.name + ' listening on http://localhost:' + _port));
 })();
