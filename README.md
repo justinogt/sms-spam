@@ -1,6 +1,7 @@
 # sms-spam
 
-Para rodar o projeto você precisa ter o nodejs na versão 12.x
+Para rodar o projeto você precisa ter o nodejs na versão 12.x.
+
 Após instalado o nodejs e baixado o projeto basta usar qualquer terminal
 e acessar a pasta do projeto sms-spam e rodar os seguintes comandos:
 
