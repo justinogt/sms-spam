@@ -1,0 +1,24 @@
+{
+  "name": "sms-spam",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/justinogt/sms-spam.git"
+  },
+  "author": "Jorge Justino",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/justinogt/sms-spam/issues"
+  },
+  "homepage": "https://github.com/justinogt/sms-spam#readme",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.17.1",
+    "natural": "^0.6.3"
+  }
+}

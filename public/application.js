@@ -1,6 +1,3 @@
-const REGEX_COLUMNS = /".*?[^"]",|".+?",|"[^"]"|[^,]+/g;
-const REGEX_REPLACE_QUOTES = /^"|"$|",$/gms;
-
 function getMonthYear(date) { return `${date.getMonth() + 1}/${date.getFullYear()}`; }
 function median(arr) {
   if (arr.length == 0) return 0;
@@ -19,44 +16,6 @@ function reduceCommonWords(arr, item) {
     data.weight += 1;
   }
   return arr;
-}
-
-const fileInput = document.getElementById('fileInput');
-const generateStatistics = document.getElementById('generateStatistics');
-
-generateStatistics.addEventListener('click', () => {
-  const file = fileInput.files.length > 0 ? fileInput.files[0] : null;
-  if (file === null) {
-    alert('Selecione o arquivo .csv');
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = ev => loadedCSV(ev.target.result);
-  reader.readAsText(file, 'utf-8');
-});
-
-function parseSMSCSV(csvContent) {
-  if (!csvContent) return[];
-
-  const rawData = [];
-  const lines = csvContent.split('\n');
-  const commonWords = lines[0].match(REGEX_COLUMNS).slice(1, 150).map(word => word.replace(REGEX_REPLACE_QUOTES, ''));
-
-  for (const line of lines.slice(1)) {
-    if (!line) continue;
-
-    const columns = line.match(REGEX_COLUMNS);
-    rawData.push({
-      fullText: columns[0].replace(REGEX_REPLACE_QUOTES, ''),
-      commonWords: columns.slice(1, 150).map((hasWord, index) => hasWord === '1' ? commonWords[index] : '0').filter(word => word !== '0'),
-      commonWordsCount: Number(columns[150]),
-      wordCount: Number(columns[151]),
-      date: new Date(columns[152]),
-      isSpam: columns[153].trim().replace(REGEX_REPLACE_QUOTES, '') === 'no' ? false : true
-    });;
-  }
-
-  return rawData;
 }
 
 function createBarChart(cardId, title, labels, datasets) {
@@ -166,7 +125,7 @@ function cardAverageWordCount(smsRawData) {
     if (!data) {
       data = { 
         monthYear, wordsCount: [], average: 0, standardDeviation: 0,
-        variance: 0
+        variance: 0, averageSpam: [], averageCommon: []
       };
       acc.push(data);
     }
@@ -174,9 +133,16 @@ function cardAverageWordCount(smsRawData) {
     data.wordsCount.push(item.wordCount);
     data.average += item.wordCount;
 
+    if (item.isSpam)
+      data.averageSpam.push(item.wordCount);
+    else
+      data.averageCommon.push(item.wordCount);
+
     return acc;
   }, []).map(item => {
     item.average /= item.wordsCount.length;
+    item.averageSpam = item.averageSpam.reduce((acc, item) => acc += item, 0) / item.averageSpam.length;
+    item.averageCommon = item.averageCommon.reduce((acc, item) => acc += item, 0) / item.averageCommon.length;
     item.median = median(item.wordsCount);
     item.variance = item.wordsCount.reduce((acc, count) => acc + Math.pow((count - item.average), 2), 0) / (item.wordsCount.length - 1);
     item.standardDeviation = Math.sqrt(item.variance);
@@ -188,6 +154,14 @@ function cardAverageWordCount(smsRawData) {
   const chartDataAverage = labels.map(label => {
     const data = smsData.find(tItem => tItem.monthYear == label);
     return data ? data.average : 0;
+  });
+  const chartDataAverageSpam = labels.map(label => {
+    const data = smsData.find(tItem => tItem.monthYear == label);
+    return data ? data.averageSpam : 0;
+  });
+  const chartDataAverageCommon = labels.map(label => {
+    const data = smsData.find(tItem => tItem.monthYear == label);
+    return data ? data.averageCommon : 0;
   });
   const chartDataMedian = labels.map(label => {
     const data = smsData.find(tItem => tItem.monthYear == label);
@@ -205,6 +179,8 @@ function cardAverageWordCount(smsRawData) {
   const chart = createBarChart('#cardAverageWordCount', 'Médias da Quantidade de Palavras por Mensagens',
     labels, [
       { label: 'Média Total', data: chartDataAverage, backgroundColor: 'rgba(65, 65, 255, .85)' },
+      { label: 'Média Spam', data: chartDataAverageSpam, backgroundColor: 'rgba(65, 65, 155, .85)' },
+      { label: 'Média Comun', data: chartDataAverageCommon, backgroundColor: 'rgba(165, 165, 255, .85)' },
       { label: 'Mediana', data: chartDataMedian, backgroundColor: 'rgba(255, 65, 65, .85)' },
       { label: 'Variância', data: chartDataVariance, backgroundColor: 'rgba(65, 255, 65, .85)' },
       { label: 'Desvio Padrão', data: chartDataStandardDeviation, backgroundColor: 'rgba(100, 150, 65, .85)' }
@@ -277,9 +253,19 @@ function cardWordsCloud(element, smsMessages) {
   });
 }
 
-function loadedCSV(csvContent) {
-  const smsRawData = parseSMSCSV(csvContent)
-    .sort((a, b) => a.date - b.date);
+(async () => {
+  $('#btn-classify').on('click', async () => {
+    $('.message-type-result').addClass('d-none');
+    const message = $('#message').val().trim();
+    if (!message) return;
+    const response = await fetch('http://localhost:8080/classify?message=' + message);
+    let classification = await response.json();
+    $('#' + (classification == 'spam' ? 'spam' : 'common')).removeClass('d-none');
+  });
+
+  const response = await fetch('http://localhost:8080/getSMSRawData');
+  let smsRawData = await response.json();
+  smsRawData = smsRawData.map(item => ({ ...item, date: new Date(item.date) })).sort((a, b) => a.date - b.date);
 
   cardFrequentWords(smsRawData);
   cardCommonSpamSMS(smsRawData);
@@ -288,4 +274,4 @@ function loadedCSV(csvContent) {
   cardSequencyCommonSpamMessages(smsRawData);
   cardWordsCloud($('#cardCommonWordsCloud .words-cloud'), smsRawData.filter(item => !item.isSpam));
   cardWordsCloud($('#cardSpamWordsCloud .words-cloud'), smsRawData.filter(item => item.isSpam));
-}
+})();

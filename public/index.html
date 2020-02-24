@@ -14,14 +14,25 @@
 <body>
   <nav class="navbar navbar-light bg-light bd-navbar shadow-sm">
     <a class="navbar-brand">SMS Spam</a>
-    <div class="form-inline w-50">
-      <input id="fileInput" class="form-control-file col-md-9" type="file" accept=".csv" aria-label="Selecione o arquivo .csv">
-      <button id="generateStatistics" class="btn btn-primary col-md-3 mt-sm-1" type="submit">Gerar Estatística</button>
-    </div>
   </nav>
 
   <div class="container-fluid pt-4 pb-4">
     <div class="row">
+      <div class="col-md-12 mb-3">
+        <div class="row">
+          <div class="col-md-10">
+            <textarea class="w-100 h-100 form-control" name="message" id="message" rows="3" placeholder="Messagem para ser classificada como SPAM ou COMUN"></textarea>
+          </div>
+          <div class="col-md-2">
+            <button id="btn-classify" class="btn btn-primary w-100 h-100">Classificar</button>
+          </div>
+          <div class="col-md-12 text-center mt-2 mb-3">
+            <strong id="spam" class="d-none message-type-result">É SPAM</strong>
+            <strong id="common" class="d-none message-type-result">É COMUM</strong>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-6 mb-3">
         <div id="cardCommonWordsCloud" class="card shadow-sm">
           <div class="card-body">
